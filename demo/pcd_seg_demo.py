@@ -73,6 +73,19 @@ def main():
 
     inferencer = LidarSeg3DInferencer(**init_args)
     result = inferencer(**call_args)
+    foreground_indices = [0, 1, 2, 3, 4, 5, 6, 7, 17, 18] 
+
+    import numpy as np
+    points = result['visualization'][0]
+    pred_labels = np.array(result['predictions'][0]['pts_semantic_mask'])
+
+    foreground_indices = [0, 1, 2, 3, 4, 5, 6, 7, 17, 18] 
+    fg_mask = np.isin(pred_labels, foreground_indices)
+    bg_mask = ~fg_mask
+    foreground_coords = points[fg_mask]
+    background_coords = points[bg_mask]
+    print(foreground_coords.shape)
+    print(background_coords.shape)
 
     if call_args['out_dir'] != '' and not (call_args['no_save_vis']
                                            and call_args['no_save_pred']):
